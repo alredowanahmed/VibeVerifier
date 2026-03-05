@@ -1,0 +1,8 @@
+{
+  "name": "VibeVerifier",
+  "description": "A high-tech bio-scanner that analyzes photo vibes and energy fields for entertainment purposes.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
