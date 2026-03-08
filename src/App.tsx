@@ -58,9 +58,25 @@ export default function App() {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       
-      // Set canvas dimensions to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Calculate dimensions to maintain aspect ratio with a max width/height of 1024
+      const MAX_DIM = 1024;
+      let width = video.videoWidth;
+      let height = video.videoHeight;
+      
+      if (width > height) {
+        if (width > MAX_DIM) {
+          height *= MAX_DIM / width;
+          width = MAX_DIM;
+        }
+      } else {
+        if (height > MAX_DIM) {
+          width *= MAX_DIM / height;
+          height = MAX_DIM;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
       
       const context = canvas.getContext('2d');
       if (context) {
@@ -69,7 +85,7 @@ export default function App() {
         context.scale(-1, 1);
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        const dataUrl = canvas.toDataURL('image/jpeg');
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // Compress to 80% quality
         setImage(dataUrl);
         setIsCameraOpen(false);
         stopCameraStream();
@@ -159,8 +175,8 @@ export default function App() {
         audioData
       );
       setResult(scanResult);
-    } catch (err) {
-      setError("Scan failed. The subject's energy field is too complex or the connection was interrupted.");
+    } catch (err: any) {
+      setError(err.message || "Scan failed. The subject's energy field is too complex or the connection was interrupted.");
       console.error(err);
     } finally {
       setIsScanning(false);
